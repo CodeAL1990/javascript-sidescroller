@@ -42,4 +42,63 @@ In animate, call update on game
 You should see your sprite 'moving' across the horizontal axis
 To prevent the 'smudging' because requestAnimationFrame is redrawing on the canvas without wiping its previous draws, use clearRect method on the canvas
 Comment increment x in Player update once the above is working
-//Input next
+Incrementing x on its own will move Player but that is due to the expression and not player input such as directional keys which is ultimately what we want
+Create input.js file and create InputHandler class where you will place all your input related code for player
+Add keys property with empty array
+keys will have directional key presses and releases being pushed and removed in it to make sure only 1 key press is present inside at any point in time
+Since the code inside classes will be executed everytime a new instance is made from them, we can make use of it to 'listen' for events such as key presses(keydown)
+Add keydown event listener for window inside InputHandler, and use event or e as the callback function(using the arrow function to bind it to the parent class)
+If you remember from previous projects, if you console.log(e) you can find out the properties of the key presses inside console when you press a key
+The property that we need is the key property which contains the direct information of whatever key we are pressing on the keyboard
+Thus, console.log(e.key) inside the event listener will show you what the keydown event listener is doing when you press a key
+It won't work now because you have not export and import yet, do it
+Like with player, you want to create an instance of InputHandler inside Game class properties
+In your console, you should be able to see all the key presses you are doing on your keyboard
+Since you only want directional keys like up down left right(ArrowUp, ArrowDown in console), you want to specifically target only those keys
+Start off with down arrow key, add a condition where if e.key is down AND that they are not yet inside keys array(use indexOf for this), push that e.key into keys array
+You can add an additional this.keys in your e.keys console.log and you can observe down arrow key being added to array and subsequent presses do not add additional items to it
+Now, create a keyup event listener for window to check for key releases
+We will be removing the keys inside keys array when they are released to make way for new key presses
+Do it for the down arrow key using the splice(index, how many to remove) method
+console.log after the statements for keydown and keyup to see arrow down key being added on press and removed on release
+Once the above is working we can add additional directional keys to listen for
+Add the up arrow key condition with the down array using OR operator to separate them
+Remember OR operator will be evaluated later than AND so you will need parenthesis to evaluate the OR condition first(which you want) before evaluating the AND condition
+If the OR operator is working as intended, add the remaining left and right to both event listeners
+Slightly different from the previous state management project, you want to add an Enter key(or Control or Alt whatever you prefer) for special move in InputHandler
+\*\*This part will be confusing
+You want player to react to input changes
+Remember the increment x in Player update which you comment?
+Update is where you want player to 'update' the canvas base on the new inputs
+Pass the keys array into the Game's player update to check for changes in that array
+In Player update, pass the input parameter in it as player expects it, and you want to check if input has the ArrowRight key(use incldues or indexOf), then increment x
+Else, if input has ArrowLeft, decrement x
+You should be able to move player left and right with the respective keys
+You are now moving at a constant of +1 or -1 and if you want to increase and decrease speed you will need to hardcode the numbers in which is not good
+You want to add speed as a Player property and set it to 0
+Add maxSpeed property and set it to 10(this will be where you can adjust your player speed)
+We will be dealing with horizontal movement for now(left and right) so add that section in Player update
+Increment x by speed(which will be 0 for now)
+In the ArrowRight and left condition, set speed to maxSpeed for right and left to -maxSpeed
+This will move the player left or right but indefinitely since speed is constantly 10 or -10
+Give the condition an else condition and set speed back to 0 once right or left is not pressed
+Notice that player can move outside the canvas which you do not want
+For the left side, you can add a condition where is x is less than 0, set x to 0(so it can never go below 0 which is beyond the left canvas)
+For the right side, if x is more than game width minus the width, set x to the game width minus the width(player is width and game width is the whole of canvas width)
+Add a vertical movement section now
+Add helper property veloY(stands for velocityY) and set it to 0
+In vertical movement section, increment y by veloY(No changes because veloY is 0)
+Just like previous projects, we need to know if player is currently on the x axis or not when jumping, during the jump and landing
+Create custom method onGround in Player and in it, return y is more than or equals to game height minus height(this will return true or false, true being player is on the ground and vice versa)
+In vertical movement section, set a condition where if input has ArrowUp, decrement veloY by -20(negative because up is negative down is positive)
+Pressing up should move player up and off screen
+Player should only jump when up is pressed AND on the ground(add the AND condition)
+Currently, player will just keep going upwards since veloY is constantly being decremented
+To bring player back down, we need an opposing force or weight of sorts so player 'fall'
+Add a property called weight and set it to 1
+Add a condition when player is not on the ground(in the air), veloY is incremented by weight(so negative veloY will constantly being added by weight which will push negative to positive and translates to upwards and downwards in this case)
+Since the addition is constant, the jump and fall will look smooth
+Player will fall through the ground now after jumping since there are no restrictions in place
+Add an else condition when player is not on ground to set veloY back to 0
+Place increment y by veloY below the ArrowUp condition for vertical movement to work
+//Next is state management, notice in the previous state management we started off with multiple js files which makes life easier when adding or altering the codes inside without breaking the rest of the game. In this we did not start of with state management so there are alot of if else statements in Player for player movements which makes it messy
