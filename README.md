@@ -101,4 +101,73 @@ Since the addition is constant, the jump and fall will look smooth
 Player will fall through the ground now after jumping since there are no restrictions in place
 Add an else condition when player is not on ground to set veloY back to 0
 Place increment y by veloY below the ArrowUp condition for vertical movement to work
-//Next is state management, notice in the previous state management we started off with multiple js files which makes life easier when adding or altering the codes inside without breaking the rest of the game. In this we did not start of with state management so there are alot of if else statements in Player for player movements which makes it messy
+Notice in the previous state management we started off with multiple js files which makes life easier when adding or altering the codes inside without breaking the rest of the game. In this we did not start of with state management so there are alot of if else statements in Player for player movements which makes it messy
+To alleviate this messiness, create a playerStates.js file where each state will be tasked to perform its own unique duties
+Create a states object inside the freshly created js file
+Add the basic states of the player such as sitting,running and jumping, giving them increasing numbers starting from 0(enum)
+Create a State class with state as its parameter(depending on which 'state' player is in, inputs will behave differently)
+Convert state parameter into class property(this is for console.log purposes)
+Create child class Sitting with parent class State
+Give it a requirement of a player parameter
+To give child access to parent's properties and methods, you use the super method in child class
+super method will look at the parameter in parent class(State) and see that state is a requirement so you need to pass in an argument in super that is related to state
+In this case, this super is in Sitting child class so you can name the state argument in super as "SITTING" to represent the state the child class is in
+The state "SITTING" will be converted in the parent State class to a class property
+this keyword will also yield an error in a child class if you do not use super method to link the child and parent class
+In Sitting child class, convert player parameter to a class property
+Create custom method enter in Sitting child class(each child class will have this method to 'enter' the related state when called)
+Create custom method handleInput with input parameter(this method will be tasked to switch to a different 'legal' state from the Sitting state in this case. 'Legal' state meaning it will ignore an input if it's not present in this method)
+Now, we need three helper properties in Player to determine what state is player in
+Add states property and assign an empty array
+Add currentState and assign it states array index(give it a default of 0 for now)
+Add an enter call on currentState(this is to call the initial state of whatever your currentState is)
+Export and import your Sitting class into player.js
+Just like in main.js with Player and InputHandler, you want to create an instance of them to run the code inside them
+In this case, however, instead of just running the code, we want to run the code base on the input being pressed
+This is why the first two helper methods are needed, states to store the different states available to the player, and currentState to switch between states base on the handleInput method(enter on currentState is only to set the initial default state)
+You want to create an instance of Sitting class inside the states array where it will store it for you to use later
+Since Sitting class expects a player argument, and the states array is in Player, you can just pass this keyword to point towards Player and run its code
+When entering sitting state, you want to draw the sitting sprite on the canvas
+Currently you have no way of drawing it because in your drawImage you are hardcoding 0,0 in sx and sy which represent the first sprite(top left) of your sprite sheet
+To gain access to the full scope of your sprite sheet, we will need helper properties to move along both the x and y coordinate
+Add frameX and frameY properties and set them to 0
+In drawImage, replace the 0s with frameX multiplied by width for sx and frameY multiplied by height for sy
+Now, when you change the values inside frameX and/or frameY, you can switch between sprite poses of the whole sheet
+For the sitting state, you can see that it starts when frameY is at 5
+With that in mind, in Sitting class enter method, you can set frameY in Player to 5
+Currently, you can only be in the sitting state because currentState will always be at index 0(sitting state) and creating a second state is meaningless when you cannot access it
+You will need a custom method that switches between states using currentState and states array
+In Player, create custom method setState and use state as its parameter
+Set currentState in setState to the states array and pass state inside the array(state will be a number representing the index of the array)
+Call enter on currentState after(enter will have specific poses, animations and other codes that you want that state to enter in)
+setState is done, allowing you to switch between states
+You want to use inputs to switch between states that is why you have handleInput custom methods in child classes
+To call upon these methods with input being a requirement, you will do so in Player update which expects input parameter and call handleInput on currentState(which will point towards what state it is in base on index), passing the input as argument in the call
+In Sitting class handleInput, you want this custom method to contain all 'legal' state switches when in Sitting state, in this case, only running left or right is allowed
+Add a condition where if input has ArrowLeft OR ArrowRight, setState to RUNNING(make use of the states object to point towards the state you want)
+You do not yet have a Running class so this condition wouldn't work, so create one(similar to Sitting class)
+Make the appropriate change to super and frameY
+In handleInput, if input is ArrowDown, switch state to SITTING(you know jumping is also a state you want but for now we are just establishing that relationship with Sitting class, and to make sure the code is going to work)
+Export/import and add new Running instance in states array in Player(remember to follow the enum order strictly)
+You can add Jumping class once you can switch between Running and sitting state
+Comment out the ArrowUp condition in vertical movement section(Notice you can jump due to this code, you are going to move it to its state now)
+Move the onGround condition into Jumping enter method(Remember you are in a different js file now)
+In jumping state, you obviously will fall after you reach peak height(which we did before using veloY and weight)
+Entering falling state do not require an input, and you only fall when veloY reaches peak at 0 and become positive(positive means falling)
+So in jumping's handleInput, if veloY is more than 0(\*\*video says more than player weight, although i think more than 0 is fine), setState to FALLING
+Add FALLING in your states object
+To enter jumping state, it makes sense it starts off from the running state so add that else if condition in its handleInput method
+Create Falling class and do the changes
+For the falling state, you only care when it touches ground
+So in its handleInput, once player is on the ground, setState to RUNNING
+Export/import jumping and falling classes, and add them to states array
+Play around in your browser and make sure all states work accordingly
+Remember in the previous state management project while in their air you cannot move left or right and you jump left or right explicitly using jump left and jump right child classes and thus you cannot control your left right motion while not on the ground
+In this project, we place the ArrowRight and left logic in the Player update method as well so player can move left right in any state, making it the control more fluid instead of forced like in state management
+You can remove the commented code in vertical movement(or leave it for reference)
+Add a new section in Player update called sprite animation where it will control all logic regarding each state's animation
+Add maxFrame property in Player and set it to 5
+You can set a condition where if frameX is less than maxFrame, increment x
+Else, set frameX set frameX back to 0
+You can see your sprites moving across horizontally on the sprite sheet(with blink for some because the rows are uneven which will show empty spaces)
+Just like previous projects, you should use time stamps from requestAnimationFrame to dictate how fast you want your frames to animate
