@@ -169,5 +169,67 @@ Add a new section in Player update called sprite animation where it will control
 Add maxFrame property in Player and set it to 5
 You can set a condition where if frameX is less than maxFrame, increment x
 Else, set frameX set frameX back to 0
-You can see your sprites moving across horizontally on the sprite sheet(with blink for some because the rows are uneven which will show empty spaces)
+You can see your sprites moving across horizontally on the sprite sheet(sitting is blinking because the rows are uneven which will show empty spaces)
+Comment the frameX condition out for now
 Just like previous projects, you should use time stamps from requestAnimationFrame to dictate how fast you want your frames to animate
+In Game, create a variable called prevTimeStamp(author uses lastTime) to hold previous time stamps
+requestAnimationFrame will pass the time stamp value in the DOM as a value to its argument as a value(in this case animate which you have passed to it)
+You can capture that value as a variable by naming it in animate's parameter, in this case name it timeStamp
+With that info, you can now calculate the time difference between each animation frame in milliseconds by deducting that timeStamp with the previous time stamp (prevTimeStamp), giving it a variable name of deltaTime
+Just like the name suggest, prevTimeStamp will always hold the time stamp from the previous loop
+As such, set prevTimeStamp to timeStamp after calculating deltaTime so the previous time stamp will be replaced by current time stamp and be used in the next loop as previous time stamp
+Since the first loop has no previous time stamp, the initial call of animate will return undefined
+Add a default 0 to the animate call to fix this
+console.log deltaTime after calculation of deltaTime to see how the console captures this information
+You probably want deltaTime to be used in areas where pc power will affect the gameplay experience differently
+In our case, this will be in the game itself and when the player inputs their keys to play the game
+Remove/comment the console log and pass deltaTime to the update call on game inside animate
+Pass deltaTime as a parameter to Game update, and inside this update, add deltaTime as a second parameter to the update call on player
+In Player update, pass deltaTime as its parameter as well
+We will need three helper properties to make use of deltaTime, fps, frameInterval and frameTimer
+Set fps to 20(this will be fixed to give uniformity across machines)
+Set frameInterval to 1000 divided by fps(Computers calculate in milliseconds)
+Set frameTimer to 0(incrementing it by deltaTime till it reaches frameInterval before serving the next frame)
+Under sprite animation section, when frameTimer is more than frameInterval, set frameTimer to 0 to reset the count
+After the above, invoke the frameX condition you have commented out(place it inside this newly created condition)
+Else, increment frameTimer by deltaTime
+You should notice that your sprite moves at a comfortable speed now(not on steroids like before)
+To fix the blinking, remove the value in maxFrame and set maxFrame value in the enter method under sitting
+You should do this for all states so each state will have the correct number of sprite frames
+There is still blinking when swapping states too fast due to frameX not resetting back to 0 before frameY is calculated
+To prevent this, set frameX to 0 at the start of each enter method so javascript will set sprite sheet to 0 index before calculating maxFrame and frameY in their enter methods
+The art assets(playerFinal.png) that you are using is designed for around 20 fps(more fps means more frames/drawings needed)
+When we introduce background into the canvas, the 'ground' level of the background will not be on the x axis of the canvas, but will protrude out at a certain margin
+Add a groundMargin property in Game and set it to 50
+In Player, y will need to be adjusted by this groundMargin so deduct the calculation by groundMargin
+Remember to place groundMargin property before the new instance of player because player will need to have access to that value in Game before it instantiates with new keyword
+Since you are moving ground level downwards by 50, you will need to offset it in your onGround method by that value to reach your new 'ground' level
+If you find that your player sprite is clipping the top of your canvas, you can adjust the veloY value in the jumping state
+We will now create background.js to deal with background related stuff
+In background.js, we will create a Layer class that has game, width, height, speedModifier, and image as parameters
+Turn them all to class properties, set xy to 0 and create custom update and draw methods
+In background update, when x is less than negative width(if background moves completely off canvas), set x back to 0
+Else, decrement x by game's speed(else keep moving x left till it does)
+multiplied by speedModifier(the speed change i.e 1.1 1.2 1.3 0.9 etc)
+There is currently no speed property in Game so create it and give it a number like 3
+In Layer draw, pass the context as parameter and use drawImage on it with 5 parameters (drawImage has 3, 5 or 9 parameters)
+Now create Background class, passing the game parameter and convert it to class property
+The background layers you downloaded has a width of 1667 and height of 500(on ubuntu you can see it but on windows you probably need to use the browser console)
+Once the background layers a downloaded you can bring them in the html using img tags
+Once created, you can use getElementbyId or just use the Id to bring them as properties inside Background class
+For now just create layer5 for now to test it out
+Add layer(\*\*author wrote layer1 might be a typo) and create new instance of Layer with the required parameters(for dy, pass 1 into it since there is no value for speedModifier yet, and for image, pass the layer5 property)
+Add backgroundLayers property with an empty array
+Place the layer property inside this array
+Create custom update and draw methods
+In background update, use forEach method on backgroundLayers and for each layer, call update on it(\*\*not sure if naming layer in constructor and using layer as the parameter in the forEach method will have issues)
+In background draw, pass context and also use the forEach method on backgroundLayers, calling draw on each layer with the required parameter
+In Game, create new instance of background and pass the game parameter into it(this keyword since background is inside Game)
+Once background is instantiated, you can call its update method inside Game update(place it above player update call because you want background to be behind player)
+Do the same in Game draw(with the required parameter)
+Remember to export/import background in Game
+You should see layer5 animating on the canvas now
+Adjust groundMargin to match player sprite with the layer5(which is the ground)
+To create a seamless endless scrolling background, you want to drawImage twice for Layer class
+Copy and paste a second drawImage for Layer and in its dx component, add the width of the Layer in it
+So instead of showing blank spaces after it scrolled through the background layer, it will show the same layer a second time but only the width of the Layer(800px of 1667px) before resetting to the start of the first drawImage(\*\*maybe because of requestAnimationFrame in animate)
