@@ -218,7 +218,7 @@ The background layers you downloaded has a width of 1667 and height of 500(on ub
 Once the background layers a downloaded you can bring them in the html using img tags
 Once created, you can use getElementbyId or just use the Id to bring them as properties inside Background class
 For now just create layer5 for now to test it out
-Add layer(\*\*author wrote layer1 might be a typo) and create new instance of Layer with the required parameters(for dy, pass 1 into it since there is no value for speedModifier yet, and for image, pass the layer5 property)
+Add layer5(\*\*author wrote layer1 might be a typo) and create new instance of Layer5 with the required parameters(for dy, pass 1 into it since there is no value for speedModifier yet, and for image, pass the layer5 property)
 Add backgroundLayers property with an empty array
 Place the layer property inside this array
 Create custom update and draw methods
@@ -233,3 +233,74 @@ Adjust groundMargin to match player sprite with the layer5(which is the ground)
 To create a seamless endless scrolling background, you want to drawImage twice for Layer class
 Copy and paste a second drawImage for Layer and in its dx component, add the width of the Layer in it
 So instead of showing blank spaces after it scrolled through the background layer, it will show the same layer a second time but only the width of the Layer(800px of 1667px) before resetting to the start of the first drawImage(\*\*maybe because of requestAnimationFrame in animate)
+With the endless loop done for layer5, we will now add the remaining layers to create a parallax effect(each individual layer moving on its own speed)
+Add the remaining layers into Background and create a new instance for each of them
+Add the new instances into backgroundLayers array so forEach method can do it for all layers
+You should see all 5 layers present on the canvas
+Currently, all 5 layers have the same speedModifier(1) because you copy pasted them all
+You can change that number around for each of them to see what fits your game
+To apply logic to game, certain states should induce certain game speeds
+For example, while sitting, game should stop moving instead of continuously scrolling
+To do it, you need access to Game's speed property
+One way is to bring the speed property into Player to modify speed values
+Another way is to access it from setState method as a parameter, allowing all states to have access to it and change value separately for each individual state
+We will use the latter so add speed as the second parameter in setState
+Set Game's speed in setState to speed parameter so states can now use the property
+We start in the sitting state so logically, Game's initial speed should be 0 instead of 3
+In playerStates.js, include a number for each state switch in handleInput(0 for sitting, and positive numbers for the rest)
+Using this method seems fine but notice that if you want to change the speed you have to go to each individual state and change the number which is tedious and not ideal
+Instead, you can add an additional property in Game called maxSpeed and give it a number you want your game to be running
+In setState, instead of setting game's speed to speed, set it to maxSpeed multiplied by speed
+This way, you can just change the value in maxSpeed and not touch any values individually in the states js
+Now, create enemies.js where we will store all enemy related info
+Create Enemy class and we will use most of the properties just like Player, but without its states since we do not control enemies with inputs
+Set frameX and Y to 0
+Bring in fps, frameInterval and frameTimer to Enemy
+Add custom methods, update and draw
+We will be using subclasses with Enemy being the parent class
+Create FlyingEnemy, GroundEnemy, and ClimbingEnemy child classes
+Bring in the sprites for flying, ground(plant), and climbing(spider big) enemies in the html using the img tags
+\*\*Missed it for the background layers, you will need to add them to css for display: none so they do not appear in html but rather from javascript. Do it for the enemies as well
+With the above done, call super inside the constructor that has game parameter before converting game to class property(not calling it at the start will result in an error)
+With parent and child classes, everything specific to the child class should be placed inside it and any properties that will be shared in all child classes will be placed in parent Enemy class
+Width and height will be specific to each enemy class type
+x and y positions will be different for each enemy type as well(for player you always start at the same place) so put it inside child classes
+For FlyingEnemy, xy will be 200 each which is roughly top right since flying
+Add speedX property(horizontal speed) and set it to 2
+Add maxFrame and check the number of sprites(6 in this case so 5)
+Add image property and point it towards the appropriate image for each child class
+\*\* something to note, you can extend into FlyingEnemy because you may have other flying enemy types like birds, bats etc so FlyingEnemy will become the parent in this case and unique properties such as width and height will be moved into those sub-sub classes instead
+Inside Enemy update, add a movement section
+In said section, increment x by speedX and increment y by speedY
+Just like Player, we will use deltaTime(we created fps, frameInterval, frameTimer before) to calculate when a frame should be served
+Place the condition that you did in sprite animation inside Enemy update as well
+In Enemy draw, pass in context parameter, and call drawImage using all 9 parameters(For simplicity, put in the image, dx, dy, dw, and dh first before the source because the former 5 are direct values from your properties while source requires some thinking/calculations)
+For Player, you have frameY calculations because you have columns and rows in your sprite sheet but enemies only has 1 row so no frameY calculations
+With the above done, we move on to FlyingEnemy update method where we will again call super to its parent class' update then write code that will be specific to FlyingEnemy
+You will need to pass deltaTime to FlyingEnemy's update as well
+Before continuing, import/export the child classes to main.js
+You will not instantiate in Game because you will creating multiple enemies and not just once
+Add custom method addEnemy to Game and create an enemies property with an empty array
+In the newly created addEnemy method, call push method on enemies array and push in an instance of FlyingEnemy with the required parameter
+In Game update, add a section for handleEnemies
+We will need some helper properties to time the enemies being added into enemies array
+In Game, add enemyTimer and set it to 0
+Add enemyInterval and set it to 1000(every 1 second)
+In handleEnemies section, when enemyTimer is more than enemyInterval, call addEnemy, and set enemyTimer back to 0, else, increment enemyTimer by deltaTime
+console.log enemies in addEnemy to see if it is working
+In Game update, call forEach on enemies array and for each enemy, call update on enemy(required parameter)
+Do the same in Game draw but for draw with its parameter
+In Enemy update, change increment x to decrement x by speedX to move from right to left
+You are not seeing anything yet because y is not a number if you check the properties in FlyingEnemy and javascript has no idea where to draw on the canvas
+It is not a number because speedY is not defined in FlyingEnemy(but we did it for speedX so OOPSIE)
+Set speedY in FlyingEnemy and set it to 0
+You should see them spawning now
+Instead of spawning from a random coordinate you hardcoded, spawn it on the right side of the canvas by setting x to game width
+For y, you want them to spawn on the top half of the canvas randomly, so set y to a random number between 50%(0.5) and game height
+Now, we want to remove enemies as they move offscreen so they do not bloat my enemies array
+in Enemy update, add a offscreen check section
+In this section, when x plus width is less than 0(enemy sprite moves offscreen completely), set markedForDeletion to true
+This markedForDeletion property will be shared across child classes so put it in the parent Enemy class and set its initial value to false
+In Game update, you are cycling through the enemies array and in each array item you are triggering its update method
+In this forEach method, check if enemy's markedForDeletion is true, and if so splice the enemy off the array (splice(index, how many))
+Check console.log enemies in addEnemy and if enemies are being removed when offscreen, the code works
