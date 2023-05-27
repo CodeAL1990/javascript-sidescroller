@@ -293,7 +293,7 @@ Do the same in Game draw but for draw with its parameter
 In Enemy update, change increment x to decrement x by speedX to move from right to left
 You are not seeing anything yet because y is not a number if you check the properties in FlyingEnemy and javascript has no idea where to draw on the canvas
 It is not a number because speedY is not defined in FlyingEnemy(but we did it for speedX so OOPSIE)
-Set speedY in FlyingEnemy and set it to 0
+Create speedY in FlyingEnemy and set it to 0
 You should see them spawning now
 Instead of spawning from a random coordinate you hardcoded, spawn it on the right side of the canvas by setting x to game width
 For y, you want them to spawn on the top half of the canvas randomly, so set y to a random number between 50%(0.5) and game height
@@ -304,3 +304,49 @@ This markedForDeletion property will be shared across child classes so put it in
 In Game update, you are cycling through the enemies array and in each array item you are triggering its update method
 In this forEach method, check if enemy's markedForDeletion is true, and if so splice the enemy off the array (splice(index, how many))
 Check console.log enemies in addEnemy and if enemies are being removed when offscreen, the code works
+We can randomise the movement speeds of an enemy type by randomising the numbers in speedX
+You can also randomise the spacing of x positions so enemy spawns are randomly closer or further apart(For x you will need to add the randomised number multiplied by width as you need to take into account the horizontal space that the sprite takes up as well)
+When player starts moving, you will notice that the game speed is inversely affecting enemy's movement which means you will need to take game speed into account inside horizontal movement of the enemy(you are decrementing x in movement section, so to account for game speed you want to add it)
+What if you want flying enemies to fly in an arc instead of just straight?
+Since this only applies to flying enemies, you can add angle and veloAngle(velocity of angle) helper variables in FlyingEnemy to calculate this arc
+Set angle to 0
+set veloAngle to a random number betweeen 0.1 and 0.2
+In FlyingEnemy update, increment angle by veloAngle
+Then, increment y by the Math.sin of angle(this will map y position along a sine wave)
+For GroundEnemy, write the starting properties specific to it just like FlyingEnemy
+Set x to game width, making them spawn on the edge of right canvas
+Set y to game height minus the height of the sprite so it spawns on the x-axis(\*MINUS GAME GROUNDMARGIN AS WELL TO SPAWN ON THE GROUND LAYER BACKGROUND)
+Link the image and set speedX and Y to 0(because plants don't move)
+Only 2 sprites so set maxFrame to 1
+If we do not declare an update method for GroundEnemy child class, it will automatically look for update method in its parent class
+The logic for ground enemy spawns that do not move should be: we move it spawns, we don't move, it doesn't spawn
+To do that, we only want plant enemy to spawn when game speed is more than 0 AND in a randomised fashion, so a randomised number between 0 and 1 less than 50% of the time
+In addEnemy, check if game speed is more than 0 AND a randomised number between 0 and 1 less than 50% of the time(or equals to to make it an exact 50/50), then push a new instance of ground enemy into enemies array
+With the above done, we move to ClimbingEnemy and add the necessary specific properties pertaining to it
+x will be game width(spawns on right edge of canvas)
+y will be a random number between 0 and game height but only on the top half(random multiply by game height multiply by 0.5)
+Link the image
+Set speedX to 0(no horizontal movement)
+Give speedY a ternary operation -> Is it a random number between 0 and 1 and is it more than 0.5?(again you can put more than or equal to for exact 50/50) if so value is 1, if not value is -1(This means 50% of the time the spider will move down(positive) or up(negative))
+6 spider sprites so maxFrame is 5
+Just like FlyingEnemy, ClimbingEnemy will have its own update method because you want to control the way it moves
+Create custom update method and call update on super with required parameter for ClimbingEnemy
+Unlike the previous two child classes, ClimbingEnemy will have its own draw method so create it
+In addEnemy, after a new instance of GroundEnemy, add an else if of the same check but without the AND condition(speed > 0), push a new instance of ClimbingEnemy in enemies array
+This way, every second you get a FlyingEnemy and a plant(<50%) or spider
+ClimbingEnemy has an extended update method because you want the spider to climb up and down which is specific to it
+In ClimbingEnemy update, if y is more than the game height minus height of spider, and offsetting it by game groundMargin(meaning if spider touches the ground layer), set speedY to negative(multiply speedY by -1)
+Currently, we only remove sprites that move offscreen horizontally but not vertically
+This is specific to spider enemies so in ClimbingEnemy update, add the condition when y is less than negative height(upwards and offscreen), set markedForDeletion to true
+We have a custom draw method for ClimbingEnemy because it will have a thread extending when it moves down(because spiders don't float)
+In ClimbingEnemy draw, call beginPath on the canvas(remember when canvas is mentioned it means context)
+beginPath will initiate the point where you will start drawing(like placing a point of your pencil on a paper but not moving)
+Call moveTo on canvas now and give coordinate 0 for xy for now
+Call lineTo on canvas and give coordinates of ClimbingEnemy's xy position
+Call stroke on canvas to draw it
+Running your game, you should now see a line extending from top left corner(0, 0 coordinate start) to the spider
+Replacing 0 in x of moveTo to ClimbingEnemy's x will put the line on the left edge of spider
+To center the line, add a width divided by 2(50% of width) so the line appears at the middle of ClimbingEnemy
+The line will now extend from middle of x from the top to the left edge
+To cut it down straight to the middle, add the width divided by 2 to lineTo's x as well so both x starting and ending positions are aligned
+You can see the line is not touch the spider, so you can extend the line downwards by adding a number to y position of ending position(lineTo) till it touches the spider
