@@ -350,3 +350,35 @@ To center the line, add a width divided by 2(50% of width) so the line appears a
 The line will now extend from middle of x from the top to the left edge
 To cut it down straight to the middle, add the width divided by 2 to lineTo's x as well so both x starting and ending positions are aligned
 You can see the line is not touch the spider, so you can extend the line downwards by adding a number to y position of ending position(lineTo) till it touches the spider
+With the above done, we will tackle collision detection
+In InputHandler, remove the console.logs
+In its keydown event, add an else if the key pressed is d, set debug property in game to its reverse(so if it's true set it to false, and vice versa)
+In Game, create and set debug property to true
+In Player draw, set a condition where is game's debug is true, use strokeRect method on canvas with player's x, y, width, and height parameters passed
+This will draw a transparent rectangle with an outline around the player sprite
+To have the d key debug key work to on and off(true or false), you will need to link the InputHandler with the game, so pass the game argument into InputHandler and convert it to class property
+With that change, input in Game should have the game parameter as well so pass it into its instance
+Pressing d should now add or remove the outline on player sprite
+Once the above works, in Enemy draw, apply the debug condition and strokeRect method to its canvas with the same parameters just like in Player draw
+Notice that it works even without reference to the game because your child classes are referencing them already
+With the rectangles in place, we will now create a helper method to check collision
+In player.js, add checkCollision custom method and inside we will cycle through enemies array that holds currently active(on canvas) objects
+Use forEach method on enemies array and for each enemy check for a condition where collision is detected(both rectangles touch or overlap) and else condition where there is no collision
+For the first condition, if enemy's x is less than player's x plus player's width AND if enemy's x plus enemy's width is more than player's x(this would only check for their horizontal positions and to collide means the y position is also affected) AND if enemy's y is less than player's y plus player's height AND if enemy's y plus enemy's height is more than player's y --> Only when all these are true, there is collision(set markedForDeletion for enemy to true), also increment game's score(which we have not made)
+Add score property in Game and set it to 0
+In Player update, place the newly created checkCollision method and call it at the start of the update
+In the browser, when player's rectangle touches enemy's rectangle, enemy should disappear
+For score display, we'll need an additional js for User's Interface(UI)
+Create new js file called UI.js
+Create class UI and reference game and convert it to class property
+Give the UI fontsize of 30, fontFamily of Helvetica(these could be adjusted to your preference)
+Create custom UI draw method and reference the canvas(context)
+In UI draw, set font on canvas with its fontSize plus px text plus fontFamily
+Align text to the left
+Apply fillStyle on canvas and set it to the game's fontColor(which is not yet made)
+In Game, add fontColor property and set it to black
+Back to UI draw, add a score section and use fillText(text, x, y, maxwidth) method on canvas
+Export/import UI to main.js
+Add UI property and create a new instance of UI
+In Game draw, use the draw method on UI with the required reference
+You should now see score and it increases whenever you remove an enemy with player
