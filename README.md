@@ -307,8 +307,8 @@ Check console.log enemies in addEnemy and if enemies are being removed when offs
 We can randomise the movement speeds of an enemy type by randomising the numbers in speedX
 You can also randomise the spacing of x positions so enemy spawns are randomly closer or further apart(For x you will need to add the randomised number multiplied by width as you need to take into account the horizontal space that the sprite takes up as well)
 When player starts moving, you will notice that the game speed is inversely affecting enemy's movement which means you will need to take game speed into account inside horizontal movement of the enemy(you are decrementing x in movement section, so to account for game speed you want to add it)
-What if you want flying enemies to fly in an arc instead of just straight?
-Since this only applies to flying enemies, you can add angle and veloAngle(velocity of angle) helper variables in FlyingEnemy to calculate this arc
+What if you want flying enemies to fly in an irregular fashion instead of just straight?
+Since this only applies to flying enemies, you can add angle and veloAngle(velocity of angle) helper variables in FlyingEnemy to calculate this movement angle
 Set angle to 0
 set veloAngle to a random number betweeen 0.1 and 0.2
 In FlyingEnemy update, increment angle by veloAngle
@@ -382,3 +382,68 @@ Export/import UI to main.js
 Add UI property and create a new instance of UI
 In Game draw, use the draw method on UI with the required reference
 You should now see score and it increases whenever you remove an enemy with player
+To further expand upon player actions, we will now add rolling state, diving state, and a hit state(damage taken state)
+In states object, add the rolling, diving and hit states
+Create or copy paste a pre-existing state child class and rename it to ROLLING and do the necessary changes to super and frames
+To enter rolling state, we want to assign a special key to it
+\*\*In the video, author uses enter but i mean for convenience i feel spacebar fits better because the arrow keys on a keyboard are on the right so you want your left hand to be activating the roll state
+In rolling state's handleInput, check if input does not include 'spacebar'(spacebar in javascript e.key property is just literal spacebar i.e " ") AND player is on ground --> setState to running
+Else, if input does not include 'spacebar' AND player is not on ground --> setState to falling
+Enable rolling states in sitting, running and during a jump by adding an else if input includes the key of your preference(mine was spacebar, author was enter), setState to rolling
+You want rolling state to be faster so put a number higher than your running, jumping and falling states(i.e if the speed parameter in your states are 1, you should pick something like 2 for rolling)
+\*\* I also want player to be able to jump from sitting state, so i'll add the up arrow key condition and setState to jumping
+With the rolling state and the associated states you want done, import/export it to player.js
+Add the new Rolling state to the states array and instantiate
+\*\* Remember we added the enter key to input previously because author wants to use enter key for special moves, if you want to use other keys(like i used spacebar), you need to add it to input.js using OR operators with its other keys
+Play around in your browser using the rolling state
+Notice that you cannot jump while in rolling state because your rolling state's handleInput lacks this behaviour
+To enter jumping state while rolling, you can add another else if to check if input includes your special moves key AND jump is pressed AND player is on ground, decrement veloY of player by the value you used in your jumping state(or lower or higher depending on how you want your jumping rolls to behave)
+Now you should be able to roll and jump at the same time
+\*\* author did not implement it in falling state so when you fall you cannot enter rolling state, you can add the condition in your falling state if you want
+Once you are done with all the state switches, let's add particle effects to certain actions done by players
+Create particles.js and Particle class
+No export on this class, reference game and convert to class property
+Add markedForDeletion property and set it to false
+Create Particle update method
+Decrement x by speedX and game's speed
+Decrement y by speedY
+Keep multiplying size by 0.95(meaning keep reducing size by 5% over each update loop)
+Add a condition where if size is less than half(0.5) set markedForDeletion to true
+speedX, speedY and size is not defined because we are going to create child classes that will have them and each will have their own unique values and behaviours
+Create 3 child classes: Dust, Splash, and Fire
+In Dust, reference game, x and y(x and y is needed because particles will be generated from the player's position)
+Add super and its required reference from the parent class
+Set size to a random number between 10 and 20
+Convert x and y to class properties
+Set speedX and Y to a random number between 0 and 1(default)
+Set color to black
+Add Dust draw custom method and its canvas reference
+Use beginPath method on canvas to begin drawing
+Use arc on canvas passing in xy coordinates, radius of size property, start angle of 0, end angle of Math.PI multiply 2(full circle)
+Use fillStyle on canvas and set it to color property
+Use fill on canvas to draw it
+To access particles.js, you will need to access it by importing it to main.js BUT it makes more sense to import it to playerStates.js because the particles appear on different states and not just from the player
+You will need to gain access to Game class in the playerStates.js so you will need to refactor some code
+Import/export Dust to playerStates.js
+In State parent class, add game as a second reference and convert it to class property
+You can start replacing the references in the child states from player to game because referencing game will give you access to player
+You will also need to change class properties and codes that reference only player to game's player
+\*\*In VS Code, you can highlight text and ctrl + d and keep tapping d to highlight text that has the same spelling --> useful for multiple changes
+Once you are done with sitting state move on to the rest and do the relevant changes from player to game
+Once all the refactor is done in playerStates, move to player.js
+Your code will now break because Player has references to itself which playerStates now point towards Game instead so change the instances of playerStates in states array to point towards the game instead(this.game)
+You will get a new error because the game is not completely loaded with the new refactor but you are triggering it using the enter method on currentState in player
+To fix it, move the currentState property and the call of enter on currentState to Game instead
+You will need to reference it from player class so all currentState code in Game must point it towards player
+Your game should now work again after the refactor and changes made, and now you can add particles effects more 'cleanly'
+Remove/Comment any previous console.logs if you want to get a clean console
+You want to hold particles items in an array so add a particles property in Game and assign it an empty array
+Back in playerStates.js, you want to create dust particles in running state so go into that state, and in its handleInput, push a new instance of Dust into the particles array you created in game
+The instances of Dust will require game, x, and y references so pass in the game, and the game's player's positions because you want to generate dust particles from the player's position
+In Game update, add a new section called handle particles
+In handle particles section, call the forEach method on particles array and for each particle, call its update method
+If markedForDeletion property in particle is true, use splice on the array to remove it
+You will need the index to splice it so in the arrow function in the forEach method add a second reference of index
+With the newly added index, splice particles at index and remove 1 array item
+In Game draw, use the forEach method on the particles array and for each particle, call its draw method with the required reference
+You should see 'dust' particles forming on the top left of the rectangle of the player's sprite
