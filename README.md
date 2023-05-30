@@ -447,3 +447,43 @@ You will need the index to splice it so in the arrow function in the forEach met
 With the newly added index, splice particles at index and remove 1 array item
 In Game draw, use the forEach method on the particles array and for each particle, call its draw method with the required reference
 You should see 'dust' particles forming on the top left of the rectangle of the player's sprite
+Just like the line attached to the spider, we want to adjust where the 'dust' appears on the player sprite
+In playerStates.js, center the dust particles on the x axis by adding half of width to player's x position in the push method in running state
+The dust particles should appear in the middle, at the top of the rectangle of player's sprite
+To move it on the opposite side(below), add the player's height to the y parameter in the push method(remember positive in y is downwards negative is upwards)
+In Dust class, you can adjust color using its property(rgba etc)
+We will now tackle Fire particles(download and move file into folder)
+Link the image in the html and add it in the display: none css
+Back to particles.js, add the references just like you did for dust
+Call super with game reference, convert the references to class properties(except game which is already in super), link the image, add size property(it's just radius) and give it a random number between 50 and 150
+Add speedX and Y and set them to 1 for now
+Create Fire update method and call its parent's update using super
+Create Fire draw method with its reference and call drawImage on said reference
+In drawImage, pass 5 parameters using size property for dw and dh
+In playerStates.js, we want the Fire particles to appear in rolling state, so do the same push method you did for dust but this time, for fire in rolling instead
+Import/export Fire to playerStates
+Fire particles should appear now when you roll
+To make the Fire image appear to 'move', we will create a rotating fire image
+Add angle property in Fire and set it to 0
+Add veloAngle(velocity of angle) property in Fire and give it a random number between -0.1 and 0.1
+In Fire update, increment angle by veloAngle
+To make sure the above code only affects Fire particles, use save and restore method in Fire draw
+Use translate method on canvas(you are converting default 0,0 position to the position you want into translate's position arguments)
+Use rotate method on canvas, using angle as its reference and will rotate everything base on the translate's position you have defined
+The translate and drawImage methods overlap due to the xy position
+Translate has xy which pushing 0,0 to xy, while drawImage also does this but since xy is already defined in translate, drawImage will push the xy further into xy^2 position
+To fix this, pass 0 into both dx and dy in drawImage since translate is basically doing the same thing as drawImage position wise
+To center the fire particles, offset it in xy by half the width for x and half the height for y(in this case size property is your width and height)
+To adjust the size of the fire particles, you can do it in Fire's size property
+You can use Math.sin method like you did for your FlyingEnemies to achieve the wobble
+To do this, increment x by Math.sin with the angle reference multiplied by a number. This along with the increment angle code you wrote before will create a sine wave
+To adjust the shrink timing of the particles, you can tweak it in Particle update's size multiplication factor
+With particle effects, you want to limit them so they do not hamper your performance(because being able to play is more important than just fancy particles lagging your game)
+In handle particles section, if the length of particles' array is more than 50, slice any array items beyond 50(so slice(0, 50))
+Now, we HATE hardcoded values and try to place them with variables as much as possible
+In Game, add a maxParticles property and set it to 50
+In handle particles section, replace the 50s with maxParticles
+Notice that slice removes the new particles rather than the old particles, resulting in your particle effects having gaps in between
+To fix this you can either adjust your slice method or instead of push on particles array(adding new items at the end of an array), you can use unshift(adding new items at the start of an array) so slice will remove old particles before new particles beyond 50 array items
+In running and rolling states, you can change the push methods to unshift methods
+With the above change, the particle effects should have no 'pause' or gaps now
