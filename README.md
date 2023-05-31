@@ -428,6 +428,8 @@ Import/export Dust to playerStates.js
 In State parent class, add game as a second reference and convert it to class property
 You can start replacing the references in the child states from player to game because referencing game will give you access to player
 You will also need to change class properties and codes that reference only player to game's player
+Your super calls in each state must also include game reference now
+If you do the above, you do not need to convert game reference to class property in the child classes, you can just do it once in the parent state
 \*\*In VS Code, you can highlight text and ctrl + d and keep tapping d to highlight text that has the same spelling --> useful for multiple changes
 Once you are done with sitting state move on to the rest and do the relevant changes from player to game
 Once all the refactor is done in playerStates, move to player.js
@@ -487,3 +489,48 @@ Notice that slice removes the new particles rather than the old particles, resul
 To fix this you can either adjust your slice method or instead of push on particles array(adding new items at the end of an array), you can use unshift(adding new items at the start of an array) so slice will remove old particles before new particles beyond 50 array items
 In running and rolling states, you can change the push methods to unshift methods
 With the above change, the particle effects should have no 'pause' or gaps now
+Now, let's allow the player to dive in the air vertically downwards
+Create Diving class which you have added in the states object
+Most of the code resides in the rolling state, so copy that and rename it to diving
+Its enter method uses the same sprite sheet componenet as rolling so that remains
+For its handleInput, when player is on the ground, set state to running
+Also, when special move key is pressed AND player is on ground, set state to rolling
+We will need to go to the other states now as there is currently no way to enter diving state
+The most obvious state to enter diving state from is jumping, so add an else if condition if input arrow key down is pressed, set state to diving
+Falling and rolling state should also be able to enter diving state to make the game more dynamic
+\*\*speed of diving is currently 0, but it should be higher because you are dive-bombing vertically. It's a placeholder
+Import/export diving class to player.js and add its instance in states array
+In diving enter method, set veloY to a positive number to increase its diving speed
+Notice after you dive, you clip pass the ground layer
+In Player update, add a horizontal boundaries section below its movement, and a vertical boundaries section below its related section as well(For horizontal boundaries, the condition for x less than or more than something is calculating the left right boundaries so move that into horizontal boundaries)
+To not allow player sprite to go below ground layer, check if y is more than game's height minus player's height minus game's groundMargin, if so, set y to that same position thus disallowing to go beyond ground layer
+Now, move on to the last class in particles that is still empty, Splash
+This particle effect will happen when the diving state touches ground, causing a shockwave(splash) that damages an area
+Add the references in splash's constructor
+Reference game in super call
+Set the size property to a random number between 100 and 200
+Convert xy to class properties
+speedX will be a random number between -3 and 3(so the effect will 'splash' left and right)
+speedY will be a random number between 2 and 4
+Add gravity property and set it to 0(for creating a 'shockwave')
+Link image to fire
+Create update method in Splash and call update on super
+Increment gravity by 0.1
+Increment y by gravity
+Create draw method with canvas reference in Splash
+Use drawImage on reference using 5 parameters(remember size property(radius) is used as the width and height)
+Import/export Splash to playerStates.js, alongside the other particle effects
+For the 'splash' to occur, we want player sprite to be in diving state and when it hits the ground in that state
+So go to diving state, and in the condition when it touches the ground, and state is switched to running, create the splash particles right after(unshift on particles array and instantiate splash with its proper references)
+There is barely any visual feedback from splash so use a for loop with a limit of 30 and move the splash creation in it
+You can adjust values in Splash class, and the xy references in splash to adjust how particles behave(although there should be a better way)
+Once you are satisfied(or fed up) with the adjusting, you can move to the damage taken state(or hit state)
+So for the hit state, create the class as usual with appropriate changes
+So for the hit state, you will take damage,trigger the state, and once the state is done(looped through the hit state sprite sheet), you will automatically enter an appropriate state
+To do this, since total horizontal hit state sprite has maxFrame of 10, in Hit handleInput, check for a condition where if frameX is more than or equals to 10 AND if player is on the ground, set state to running
+Else if frameX is more than or equal to 10 AND player is not on the ground, set state to falling
+Import/export hit to player.js and instantiate it in states array
+Currently, all collisions will turn markedForDeletion to true
+In checkCollision method, remove the idle else condition(not needed)
+In its condition after markedForDeletion becomes true, add another if condition to check if the currentState is in rolling OR diving state(so index 4 and 5 in states array), increment game's score(move it from before inside this condition)
+Else, set state to (6, 0) --> this means 6th index which is hit state, and 0 speed(not moving)
