@@ -78,7 +78,7 @@ You are now moving at a constant of +1 or -1 and if you want to increase and dec
 You want to add speed as a Player property and set it to 0
 Add maxSpeed property and set it to 10(this will be where you can adjust your player speed)
 We will be dealing with horizontal movement for now(left and right) so add that section in Player update
-Increment x by speed(which will be 0 for now)
+Increase x by speed(which will be 0 for now)
 In the ArrowRight and left condition, set speed to maxSpeed for right and left to -maxSpeed
 This will move the player left or right but indefinitely since speed is constantly 10 or -10
 Give the condition an else condition and set speed back to 0 once right or left is not pressed
@@ -87,20 +87,20 @@ For the left side, you can add a condition where is x is less than 0, set x to 0
 For the right side, if x is more than game width minus the width, set x to the game width minus the width(player is width and game width is the whole of canvas width)
 Add a vertical movement section now
 Add helper property veloY(stands for velocityY) and set it to 0
-In vertical movement section, increment y by veloY(No changes because veloY is 0)
+In vertical movement section, increase y by veloY(No changes because veloY is 0)
 Just like previous projects, we need to know if player is currently on the x axis or not when jumping, during the jump and landing
 Create custom method onGround in Player and in it, return y is more than or equals to game height minus height(this will return true or false, true being player is on the ground and vice versa)
-In vertical movement section, set a condition where if input has ArrowUp, decrement veloY by -20(negative because up is negative down is positive)
+In vertical movement section, set a condition where if input has ArrowUp, minus veloY by -20(negative because up is negative down is positive)
 Pressing up should move player up and off screen
 Player should only jump when up is pressed AND on the ground(add the AND condition)
-Currently, player will just keep going upwards since veloY is constantly being decremented
+Currently, player will just keep going upwards since veloY is constantly negative
 To bring player back down, we need an opposing force or weight of sorts so player 'fall'
 Add a property called weight and set it to 1
 Add a condition when player is not on the ground(in the air), veloY is incremented by weight(so negative veloY will constantly being added by weight which will push negative to positive and translates to upwards and downwards in this case)
 Since the addition is constant, the jump and fall will look smooth
 Player will fall through the ground now after jumping since there are no restrictions in place
 Add an else condition when player is not on ground to set veloY back to 0
-Place increment y by veloY below the ArrowUp condition for vertical movement to work
+Place increase y by veloY below the ArrowUp condition for vertical movement to work
 Notice in the previous state management we started off with multiple js files which makes life easier when adding or altering the codes inside without breaking the rest of the game. In this we did not start of with state management so there are alot of if else statements in Player for player movements which makes it messy
 To alleviate this messiness, create a playerStates.js file where each state will be tasked to perform its own unique duties
 Create a states object inside the freshly created js file
@@ -189,10 +189,10 @@ In Player update, pass deltaTime as its parameter as well
 We will need three helper properties to make use of deltaTime, fps, frameInterval and frameTimer
 Set fps to 20(this will be fixed to give uniformity across machines)
 Set frameInterval to 1000 divided by fps(Computers calculate in milliseconds)
-Set frameTimer to 0(incrementing it by deltaTime till it reaches frameInterval before serving the next frame)
+Set frameTimer to 0(increasing it by deltaTime till it reaches frameInterval before serving the next frame)
 Under sprite animation section, when frameTimer is more than frameInterval, set frameTimer to 0 to reset the count
 After the above, invoke the frameX condition you have commented out(place it inside this newly created condition)
-Else, increment frameTimer by deltaTime
+Else, increase frameTimer by deltaTime
 You should notice that your sprite moves at a comfortable speed now(not on steroids like before)
 To fix the blinking, remove the value in maxFrame and set maxFrame value in the enter method under sitting
 You should do this for all states so each state will have the correct number of sprite frames
@@ -209,7 +209,7 @@ We will now create background.js to deal with background related stuff
 In background.js, we will create a Layer class that has game, width, height, speedModifier, and image as parameters
 Turn them all to class properties, set xy to 0 and create custom update and draw methods
 In background update, when x is less than negative width(if background moves completely off canvas), set x back to 0
-Else, decrement x by game's speed(else keep moving x left till it does)
+Else, minus x by game's speed(else keep moving x left till it does)
 multiplied by speedModifier(the speed change i.e 1.1 1.2 1.3 0.9 etc)
 There is currently no speed property in Game so create it and give it a number like 3
 In Layer draw, pass the context as parameter and use drawImage on it with 5 parameters (drawImage has 3, 5 or 9 parameters)
@@ -271,7 +271,7 @@ Add maxFrame and check the number of sprites(6 in this case so 5)
 Add image property and point it towards the appropriate image for each child class
 \*\* something to note, you can extend into FlyingEnemy because you may have other flying enemy types like birds, bats etc so FlyingEnemy will become the parent in this case and unique properties such as width and height will be moved into those sub-sub classes instead
 Inside Enemy update, add a movement section
-In said section, increment x by speedX and increment y by speedY
+In said section, increase x by speedX and increase y by speedY
 Just like Player, we will use deltaTime(we created fps, frameInterval, frameTimer before) to calculate when a frame should be served
 Place the condition that you did in sprite animation inside Enemy update as well
 In Enemy draw, pass in context parameter, and call drawImage using all 9 parameters(For simplicity, put in the image, dx, dy, dw, and dh first before the source because the former 5 are direct values from your properties while source requires some thinking/calculations)
@@ -286,11 +286,11 @@ In Game update, add a section for handleEnemies
 We will need some helper properties to time the enemies being added into enemies array
 In Game, add enemyTimer and set it to 0
 Add enemyInterval and set it to 1000(every 1 second)
-In handleEnemies section, when enemyTimer is more than enemyInterval, call addEnemy, and set enemyTimer back to 0, else, increment enemyTimer by deltaTime
+In handleEnemies section, when enemyTimer is more than enemyInterval, call addEnemy, and set enemyTimer back to 0, else, increase enemyTimer by deltaTime
 console.log enemies in addEnemy to see if it is working
 In Game update, call forEach on enemies array and for each enemy, call update on enemy(required parameter)
 Do the same in Game draw but for draw with its parameter
-In Enemy update, change increment x to decrement x by speedX to move from right to left
+In Enemy update, change plus x to minus x by speedX to move from right to left
 You are not seeing anything yet because y is not a number if you check the properties in FlyingEnemy and javascript has no idea where to draw on the canvas
 It is not a number because speedY is not defined in FlyingEnemy(but we did it for speedX so OOPSIE)
 Create speedY in FlyingEnemy and set it to 0
@@ -306,13 +306,13 @@ In this forEach method, check if enemy's markedForDeletion is true, and if so sp
 Check console.log enemies in addEnemy and if enemies are being removed when offscreen, the code works
 We can randomise the movement speeds of an enemy type by randomising the numbers in speedX
 You can also randomise the spacing of x positions so enemy spawns are randomly closer or further apart(For x you will need to add the randomised number multiplied by width as you need to take into account the horizontal space that the sprite takes up as well)
-When player starts moving, you will notice that the game speed is inversely affecting enemy's movement which means you will need to take game speed into account inside horizontal movement of the enemy(you are decrementing x in movement section, so to account for game speed you want to add it)
+When player starts moving, you will notice that the game speed is inversely affecting enemy's movement which means you will need to take game speed into account inside horizontal movement of the enemy(x is moving to the left as it's being deducted by speedX in movement section, so to account for game speed you want to add it)
 What if you want flying enemies to fly in an irregular fashion instead of just straight?
 Since this only applies to flying enemies, you can add angle and veloAngle(velocity of angle) helper variables in FlyingEnemy to calculate this movement angle
 Set angle to 0
 set veloAngle to a random number betweeen 0.1 and 0.2
-In FlyingEnemy update, increment angle by veloAngle
-Then, increment y by the Math.sin of angle(this will map y position along a sine wave)
+In FlyingEnemy update, increase angle by veloAngle
+Then, increase y by the Math.sin of angle(this will map y position along a sine wave)
 For GroundEnemy, write the starting properties specific to it just like FlyingEnemy
 Set x to game width, making them spawn on the edge of right canvas
 Set y to game height minus the height of the sprite so it spawns on the x-axis(\*MINUS GAME GROUNDMARGIN AS WELL TO SPAWN ON THE GROUND LAYER BACKGROUND)
@@ -397,7 +397,7 @@ Add the new Rolling state to the states array and instantiate
 \*\* Remember we added the enter key to input previously because author wants to use enter key for special moves, if you want to use other keys(like i used spacebar), you need to add it to input.js using OR operators with its other keys
 Play around in your browser using the rolling state
 Notice that you cannot jump while in rolling state because your rolling state's handleInput lacks this behaviour
-To enter jumping state while rolling, you can add another else if to check if input includes your special moves key AND jump is pressed AND player is on ground, decrement veloY of player by the value you used in your jumping state(or lower or higher depending on how you want your jumping rolls to behave)
+To enter jumping state while rolling, you can add another else if to check if input includes your special moves key AND jump is pressed AND player is on ground, minus veloY of player by the value you used in your jumping state(or lower or higher depending on how you want your jumping rolls to behave)
 Now you should be able to roll and jump at the same time
 \*\* author did not implement it in falling state so when you fall you cannot enter rolling state, you can add the condition in your falling state if you want
 Once you are done with all the state switches, let's add particle effects to certain actions done by players
@@ -405,8 +405,8 @@ Create particles.js and Particle class
 No export on this class, reference game and convert to class property
 Add markedForDeletion property and set it to false
 Create Particle update method
-Decrement x by speedX and game's speed
-Decrement y by speedY
+Minus x by speedX and game's speed
+Minus y by speedY
 Keep multiplying size by 0.95(meaning keep reducing size by 5% over each update loop)
 Add a condition where if size is less than half(0.5) set markedForDeletion to true
 speedX, speedY and size is not defined because we are going to create child classes that will have them and each will have their own unique values and behaviours
@@ -468,7 +468,7 @@ Fire particles should appear now when you roll
 To make the Fire image appear to 'move', we will create a rotating fire image
 Add angle property in Fire and set it to 0
 Add veloAngle(velocity of angle) property in Fire and give it a random number between -0.1 and 0.1
-In Fire update, increment angle by veloAngle
+In Fire update, increase angle by veloAngle
 To make sure the above code only affects Fire particles, use save and restore method in Fire draw
 Use translate method on canvas(you are converting default 0,0 position to the position you want into translate's position arguments)
 Use rotate method on canvas, using angle as its reference and will rotate everything base on the translate's position you have defined
@@ -478,7 +478,7 @@ To fix this, pass 0 into both dx and dy in drawImage since translate is basicall
 To center the fire particles, offset it in xy by half the width for x and half the height for y(in this case size property is your width and height)
 To adjust the size of the fire particles, you can do it in Fire's size property
 You can use Math.sin method like you did for your FlyingEnemies to achieve the wobble
-To do this, increment x by Math.sin with the angle reference multiplied by a number. This along with the increment angle code you wrote before will create a sine wave
+To do this, increase x by Math.sin with the angle reference multiplied by a number. This along with the increment angle code you wrote before will create a sine wave
 To adjust the shrink timing of the particles, you can tweak it in Particle update's size multiplication factor
 With particle effects, you want to limit them so they do not hamper your performance(because being able to play is more important than just fancy particles lagging your game)
 In handle particles section, if the length of particles' array is more than 50, slice any array items beyond 50(so slice(0, 50))
@@ -515,8 +515,8 @@ speedY will be a random number between 2 and 4
 Add gravity property and set it to 0(for creating a 'shockwave')
 Link image to fire
 Create update method in Splash and call update on super
-Increment gravity by 0.1
-Increment y by gravity
+Increase gravity by 0.1
+Increase y by gravity
 Create draw method with canvas reference in Splash
 Use drawImage on reference using 5 parameters(remember size property(radius) is used as the width and height)
 Import/export Splash to playerStates.js, alongside the other particle effects
@@ -533,4 +533,74 @@ Import/export hit to player.js and instantiate it in states array
 Currently, all collisions will turn markedForDeletion to true
 In checkCollision method, remove the idle else condition(not needed)
 In its condition after markedForDeletion becomes true, add another if condition to check if the currentState is in rolling OR diving state(so index 4 and 5 in states array), increment game's score(move it from before inside this condition)
-Else, set state to (6, 0) --> this means 6th index which is hit state, and 0 speed(not moving)
+Else, set state to (6, 0) --> this means 6th index which is hit state, and 0 speed(not moving) with no score increment
+Now that we have all(most?) of our collision states, we can create our collison animations
+Create collisionAnimation.js and create the class
+As usual, pass the references and convert game to class property, and link the image(boom sprite)
+Set the spriteWidth and height accordingly(\*\*200 and 179, author uses 100 and 90 different sized sprite sheet)
+Add sizeModifier property and randomised it between 0.5 to 1.5(\*\* i tweaked this value here because the image sprites i'm given is twice as large for some reason)
+Add width property and set it to the multiplication between spriteWidth and sizeModifier(this is to randomise the collision animation size with its aspect ratio so no stretching occurs)
+Do the same for height
+You can only convert x and y references to class properties now because you need the width and height calculation you did prior
+So, set x to x minus width times 0.5(to center it on the rectangle)
+Do the same for y and its value using height(\*\*Author might have typo he uses width instead YEP IT WAS A TYPO)
+Add frameX and set it to 0
+Add maxFrame and set it to 4(total 5 sprites)
+Add markedForDeletion and set it to false
+Add CollisionAnimation draw method and reference the canvas
+Use drawImage on refernce and pass in the full 9 parameters
+Add update method to the above class and minus x by the game's speed(so collision animation syncs with the game's speed)
+Import/export to player.js
+Add collisions property to Game and give it an empty array
+In checkCollision, whenever player collides with enemy(first condition), after setting enemy's markedForDeletion to true, push a new instance of CollisionAnimation with the required references to collisions array
+For its positional references, make sure to center them
+In Game update, add a handle collision sprites section
+In this section, use forEach method on collisions array and for each collision and index, call update on collision with deltaTime reference, and if markedForDeletion in collision is true, splice 1 from that index
+In Game draw, use forEach method and for each collision, call draw with required reference on collision
+Colliding with enemies should now yield a static image on each enemy's position
+Now we shall start animating the frames
+In CollisionAnimation update, increment frameX
+Then, if frameX is more than maxFrame, set markedForDeletion to true
+Colliding with enemies should give you the animation now, albeit very fast because there is no limit
+To limit it, we use deltaTime with the help of helper properties to time each animation frame
+Reference CollisionAnimation update with deltaTime
+Add fps property and set it to 15
+Add frameInterval and set it to 1000(1sec) divided by fps
+Add frameTimer and set it to 0
+With the helper properties done, back to update and set a condition when frameTimer is more than frameInterval, increment frameX(or move the previous one you wrote in), set frameTimer back to 0
+Else, increase frameTimer by deltaTime
+You should see the collision animation frames now when colliding
+You can give fps a random number instead of a fix number(any number above 50 will have the same result because there is a cap)
+So instead of 15, you can give it a random number between 0 and 50(or anything in between) so the collision animation looks 'different' each time
+In Game, set default debug value to false, so you don't see the collision rectangles when you first enter the game(you can always press d to toggle it)
+We will now set a time limit from game start to game end
+In Game, add time property and set it to 0
+Add maxTime and set it to 2000
+Add gameOver and set it to false
+In Game update, increase time by deltaTime
+And right after it, if time is more than maxTime, set gameOver to true
+In animate, only invoke requestAnimationFrame when gameOver is false
+After the above, your game should stop animating
+In UI draw, create a timer section
+In this section, use the font method just like you did before for score but multiply the fontSize by 0.8 this time
+Use fillText method on reference and write the text for time
+With timer section done, your game should start animating till the value of maxTime and then it stops
+Add a game over messages section
+In this section, if game's gameOver is true, textAlign to center, set the font to your preferences, use fillText(and a second set of fillText if you want to place a second message with different font, you'll need to adjust their placement using xy parameters in fillText) and set your winning messages in the middle of canvas(center them with width and height)
+Once the above is working, you can now interact with game's score to display this message and allow animation to occur again(your game should still be static)
+You can check if game's score is more than a number of your preference, run fillText of your winning messages(move the fillText you made for winning into this newly created condition)
+Else, run fillText of your losing message(basically a second set of your winning messages but change them to losing messages instead)
+maxTime is your game running time before it calculates your score and decide if you get a winning or losing message
+Set maxTime to a number of your choice(remember javascript counts in milliseconds so use 1000 is 1 second)
+Notice that your timer goes to decimal places and it is in the milliseconds
+To convert it to seconds, in the fillText parameter for game time calculation, multiply the time by 0.001(multiplying 1000 by 0.001 which will move the decimal by 3 to the right resulting in 10) and use a toFixed javascript method of 1(which will force the numbers shown beside Time to be at 1 decimal place)
+To make sure UI's draw method only applies to the text you wrote the code in and not spill to other objects(such as enemies and player), use save and restore method on the reference
+Now, you can apply shadow built-in method inside UI draw so it only affects the text on the canvas with save and restore method in place
+Use shadowOffsetX on reference and set it to 2
+Do the same for shadowoffsetY
+Use shadowColor on reference and set it to white
+Use shadowBlur on reference and set it to 0
+\*\*The above shadow built in method is similar to what you did when you added a second set of fillText and change the color to a contrasting color and moved the position slightly to create a shadow effect
+Notice that when player takes damage(get hit), player can still move left and right
+In Player update, under horizontal movement, add an AND operator to ArrowRight and ArrowLeft conditions and after that operator, add the condition that currentState is not the 6th state in the states array(meaning not the during the hit state)
+The above will disable left and right movement when player is in hit state
