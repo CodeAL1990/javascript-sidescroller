@@ -80,7 +80,7 @@ export class Jumping extends State {
     } else if (input.includes(" ")) {
       this.game.player.setState(states.ROLLING, 2);
     } else if (input.includes("ArrowDown")) {
-      this.game.player.setState(states.DIVING, 0);
+      this.game.player.setState(states.DIVING, 1);
     }
   }
 }
@@ -100,7 +100,7 @@ export class Falling extends State {
     } else if (input.includes(" ")) {
       this.game.player.setState(states.ROLLING, 2);
     } else if (input.includes("ArrowDown")) {
-      this.game.player.setState(states.DIVING, 0);
+      this.game.player.setState(states.DIVING, 1);
     }
   }
 }
@@ -132,8 +132,8 @@ export class Rolling extends State {
       this.game.player.onGround()
     ) {
       this.game.player.veloY -= 27;
-    } else if (input.includes("ArrowDown")) {
-      this.game.player.setState(states.DIVING, 0);
+    } else if (input.includes("ArrowDown") && !this.game.player.onGround()) {
+      this.game.player.setState(states.DIVING, 1);
     }
   }
 }

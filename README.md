@@ -604,3 +604,77 @@ Use shadowBlur on reference and set it to 0
 Notice that when player takes damage(get hit), player can still move left and right
 In Player update, under horizontal movement, add an AND operator to ArrowRight and ArrowLeft conditions and after that operator, add the condition that currentState is not the 6th state in the states array(meaning not the during the hit state)
 The above will disable left and right movement when player is in hit state
+When on the ground in rolling state, player is allowed to input ArrowDown which and since you cannot go below ground layer, it causes a weird 'bobbing' effect which is visible by looking at the particle effects going up down rapidly(due to diving state)
+In rolling state, search for the condition on ArrowDown and add an additional condition where player is not on ground, then enter diving state
+\*\* Everything below after this are changes or additions that are optional or bug fixes(for more practice)
+We will swap backgrounds(from city to forest)
+You can adjust the speedModifier parameter in your layers if you want
+In Game, change value of groundMargin from 80 to a smaller number for a '3d' effect when player stands on the ground
+Add creepster(or your preference) google font to html
+Place it above your custom css file so it loads first before your css file
+Add the font-family to your canvas in css so it can be drawn on your canvas
+Now you can change the fontFamily of your UI to the google font of your choice
+We want to add lives to the game so for each time player enters hit state, it loses a live
+Download the associated lives image(heart or dog), and place it in your html and the id in css so it will not appear on the background
+You will be drawing the lives image in your UI so link the image in your UI class
+Lives will appear under timer(or wherever you please)
+Add a lives section below your timer
+In that section, use drawImage using 5 parameters(place it underneath timer for now and width and height will be hardcoded)
+In Game, add lives property and set it to 5
+Back in lives section, use a for loop with a limit of game's lives(5 in this case) and invoke the drawImage you just wrote in it
+There are now 5 lives but you do not see it because they are stacked on top of one another
+You will need to multiply the horizontal x position(dx) by the for loop(i)
+To align it with the time and score, your hardcoded x position needs to be the same as your width(25) multiplied by the for loop and add 20px(the same x position as your score and time)
+Once your lives appear properly, go to checkCollision method and in the condition where you set state to hit, after you get hit, decrement game's lives
+After the decrement, check if game's lives is less than or equals to 0, if so, set gameOver to true
+You should lose live when you enter hit state and game over message when you lose all lives
+We will be adding a floating score to give you visual feedback when you score points
+Create floatingMessages.js and its class
+In the class, you will have 5 parameters, the value, original xy position, and the target xy position you want the text to move to
+Convert value, original xy, and target xy to class properties
+Set markedForDeletion to false
+Add a timer and set it to 0
+Add custom update and draw methods to it
+In its update method, increase x by the target x position minus original x position
+Do the same for y
+Increment timer after the above
+Check if timer is more than 100, and if so, set markedForDeletion to true
+In its draw method, pass the required reference
+Set the font to 20px and the google font you chose
+You will now employ the method similar to the use of built-in javascript shadow method you did previously for your score and time(this was done in previous tutorials)
+You will use fillStyle and fillText twice with constrasting colors and slightly modified xy positions to showcase a 'shadow' effect
+For the first fillStyle, set it to white
+First fillText, give it the value, and xy parameters
+Second fillStyle black
+Second fillText, give it the same value but give the xy parameters a slight offset(+2) to shift them slightly to bottom right and create a 'shadow' effect
+Import/export FloatingMessage class to player.js
+Inside checkCollision, when you gain score, you want floating message to appear towards your score
+In Game, add a floatingMessages property with an empty array
+Back to player.js you can now push a new instance of FloatingMessage class into floatingMessages array with the required references(value, original xy positions, and target xy positions)
+Starting with value, you can put a +1 text in it
+For original/starting xy positions, use enemy's xy positions
+For target xy, use 0,0 for now
+In Game update, add a handle messages section and in it, use a forEach method on floatingMessages and for each message, call its update method
+\*\* You will not use splice now because it causes bugs which we will get to soon
+In Game draw, also use forEach method and for each message, call its draw method
+You can only see the bottom of the text because your target xy position is set to 0,0
+You can see there is no animation and it just appears on 0,0 because javascript is going too fast
+To slow it down, go to FloatingMessage update and for the increase in xy, multiply the calculation by 0.03(3%) so you can see the animation actually play out because you slow it down(before multiplying the calculation, remember to put parenthesis on the original calculation because you want those to calculate first before multiplying)
+You should now see the +1s floating to your 0,0 position
+You should adjust them so it floats next to your score to simulate your player earning points(you know the position of your score, go to UI)
+Your +1s will accumulate beside your score as you did not splice or filter them
+\*\*Speaking of splice, using splice is causing bugs in your game because the splice method is constantly pushing your object to the left before removing it(you can see it with ground enemies where they keep shifting on your ground layer but it is happening to every object uses splice)
+\*\*Using filter will avoid this because you are setting the array property to filter all array items in the array with markedForDeletion set to false, thereby automatically removing them instead of adding to the array and then removing them
+\*\*Author did not add a filtered arrays section so you add it
+We will now change all splice methods you used previously to filter method
+To start off, set floatingMessages to filter its array and for each message in it, check if markedForDeletion is false and filter will include those while removing the array items in which markedForDeletion is true
+Do the same for enemies, particles, and collisions
+In Player, add currentState property and set it to null(the refactor we've done before require us to move this property to Game class, this is just to make it clearer but the code will work the same with or without it)
+Final tuning to the game's difficulty
+Set maxTime in Game to 30000(30s)
+Create and set winningScore to 40 in Game
+In checkCollision, when entering hit state, you can decrease game's score by 5(or however much you want)
+In game over messages section, instead of checking if gameScore is more than 5, check if it is more than the winningScore, then display the winning message
+In main.js, enlarge the width(if you want) but don't touch the height because all height related stuff are optimized and changing it will mean you need to change nearly all calculations and backgrounds
+\*\*Changed Diving speed parameter to 1 instead of 0 because i want the game to be constantly scrolling
+Done! Finished video!

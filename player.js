@@ -10,6 +10,8 @@ import {
 
 import { CollisionAnimation } from "./collisionAnimation.js";
 
+import { FloatingMessage } from "./floatingMessages.js";
+
 export class Player {
   constructor(game) {
     this.game = game;
@@ -37,6 +39,7 @@ export class Player {
       new Diving(this.game),
       new Hit(this.game),
     ];
+    this.currentState = null;
   }
   update(input, deltaTime) {
     this.checkCollision();
@@ -116,8 +119,14 @@ export class Player {
           this.currentState === this.states[5]
         ) {
           this.game.score++;
+          this.game.floatingMessages.push(
+            new FloatingMessage("+1", enemy.x, enemy.y, 120, 50)
+          );
         } else {
           this.setState(6, 0);
+          this.game.score -= 5;
+          this.game.lives--;
+          if (this.game.lives <= 0) this.game.gameOver = true;
         }
       }
     });
